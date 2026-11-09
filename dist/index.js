@@ -138,7 +138,7 @@ function createHoneypot(options) {
         // Verifica blocklist para TODAS as requisições - bloqueia IPs conhecidos imediatamente
         if (ip && blocklist.isBlocked(ip)) {
             logger.debug("IP bloqueado pela blocklist", { ip, path: req.path });
-            res.status(403).json({ error: "Forbidden" });
+            res.status(403);
             return;
         }
         const trap = findTrap(req.path, compiledTraps, logger);
