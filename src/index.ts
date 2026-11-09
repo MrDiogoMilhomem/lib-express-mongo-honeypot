@@ -1,25 +1,22 @@
 /**
- * Honeypot middleware - main export
+ * Middleware Honeypot - exportação principal
  */
 
 import type { Request, Response, NextFunction } from "express";
 import { promises as fs } from "node:fs";
 import { join } from "node:path";
-import { DEFAULT_TRAPS } from "./types";
+import { DEFAULT_TRAPS } from "./routes";
 import type {
   HoneypotOptions,
   HoneypotMiddleware,
   Trap,
   HoneypotLogger,
-  BlocklistStorage,
-  InternalNetworksConfig,
 } from "./types";
 import { normalizeIp, isUnblockableIp, getClientIp, setInternalNetworks } from "./ip";
-import { createConsoleLogger, createNoopLogger, defaultLogger } from "./logger";
-import { DEFAULT_TRAPS as ROUTES_DEFAULT_TRAPS } from "./routes";
+import { createNoopLogger, defaultLogger } from "./logger";
 
 /**
- * Convert glob pattern to RegExp
+ * Converte padrão glob para RegExp
  */
 function globToRegex(glob: string): RegExp {
   const escaped = glob
@@ -29,7 +26,7 @@ function globToRegex(glob: string): RegExp {
 }
 
 /**
- * Load traps from JSON file
+ * Carrega armadilhas de arquivo JSON
  */
 async function loadTrapsFromFile(filePath: string, logger: HoneypotLogger): Promise<string[]> {
   const fullPath = join(process.cwd(), filePath);
@@ -44,17 +41,17 @@ async function loadTrapsFromFile(filePath: string, logger: HoneypotLogger): Prom
         .map((item) => item.toLowerCase());
 
       const merged = new Set([...DEFAULT_TRAPS, ...customTraps]);
-      logger.debug("Honeypot traps loaded from file", { file: filePath, count: merged.size, traps: Array.from(merged) });
+      logger.debug("Armadilhas do honeypot carregadas do arquivo", { file: filePath, count: merged.size, traps: Array.from(merged) });
       return Array.from(merged);
     } else {
-      logger.warn("Honeypot traps file does not contain valid JSON array, using defaults", { file: filePath });
+      logger.warn("Arquivo de armadilhas não contém array JSON válido, usando padrões", { file: filePath });
     }
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === "ENOENT") {
-      logger.info("Honeypot traps file not found, using defaults", { file: filePath });
+      logger.info("Arquivo de armadilhas não encontrado, usando padrões", { file: filePath });
     } else {
-      logger.warn("Error loading honeypot traps file, using defaults", { file: filePath, error: String(error) });
+      logger.warn("Erro ao carregar arquivo de armadilhas, usando padrões", { file: filePath, error: String(error) });
     }
   }
 
@@ -62,7 +59,7 @@ async function loadTrapsFromFile(filePath: string, logger: HoneypotLogger): Prom
 }
 
 /**
- * Compile traps to regex patterns
+ * Compila armadilhas para padrões regex
  */
 function compileTraps(traps: string[]): Trap[] {
   return traps.map((pattern) => {
@@ -77,7 +74,7 @@ function compileTraps(traps: string[]): Trap[] {
 }
 
 /**
- * Find matching trap for a path
+ * Encontra armadilha correspondente para um caminho
  */
 function findTrap(path: string, traps: Trap[], logger: HoneypotLogger): Trap | undefined {
   const lowerPath = path.toLowerCase();
@@ -86,31 +83,31 @@ function findTrap(path: string, traps: Trap[], logger: HoneypotLogger): Trap | u
     if (trap.isGlob && trap.regex) {
       const matches = trap.regex.test(lowerPath);
       if (matches) {
-        logger.debug("Honeypot match (glob)", { path, trap: trap.pattern });
+        logger.debug("Correspondência de armadilha (glob)", { path, trap: trap.pattern });
         return trap;
       }
     } else {
       const exact = lowerPath === trap.pattern || lowerPath.startsWith(`${trap.pattern}/`);
       if (exact) {
-        logger.debug("Honeypot match (exact)", { path, trap: trap.pattern });
+        logger.debug("Correspondência de armadilha (exata)", { path, trap: trap.pattern });
         return trap;
       }
     }
   }
 
-  logger.debug("Honeypot no match", { path });
+  logger.debug("Sem correspondência de armadilha", { path });
   return undefined;
 }
 
 /**
- * Default handler when trap is triggered
+ * Handler padrão quando armadilha é disparada
  */
 async function defaultOnTriggered(req: Request, res: Response, _trap: string, _ip: string): Promise<void> {
   res.status(404).end();
 }
 
 /**
- * Create honeypot middleware
+ * Cria middleware honeypot
  */
 export function createHoneypot(options: HoneypotOptions): HoneypotMiddleware {
   const {
@@ -124,7 +121,7 @@ export function createHoneypot(options: HoneypotOptions): HoneypotMiddleware {
     autoLoadTraps = true,
   } = options;
 
-  // Configure logger
+  // Configura logger
   let logger: HoneypotLogger;
   if (loggerOption === false) {
     logger = createNoopLogger();
@@ -132,36 +129,45 @@ export function createHoneypot(options: HoneypotOptions): HoneypotMiddleware {
     logger = loggerOption;
   }
 
-  // Configure internal networks
+  // Configura redes internas
   if (internalNetworks !== undefined) {
     setInternalNetworks(internalNetworks);
     if (internalNetworks === false) {
-      logger.info("Honeypot internal networks check disabled");
+      logger.info("Verificação de redes internas do honeypot desabilitada");
     } else {
-      logger.debug("Honeypot custom internal networks configured");
+      logger.debug("Redes internas customizadas configuradas no honeypot");
     }
   }
 
-  // Merge default traps with custom traps
+  // Mescla armadilhas padrão com customizadas
   const allTraps = Array.from(new Set([...DEFAULT_TRAPS, ...traps.map((t) => t.toLowerCase())]));
   let compiledTraps = compileTraps(allTraps);
   let trapsLoaded = Promise.resolve();
 
-  // Load traps from file if specified
+  // Carrega armadilhas do arquivo se especificado
   if (trapsFile && autoLoadTraps) {
     trapsLoaded = loadTrapsFromFile(trapsFile, logger).then((loadedTraps) => {
       compiledTraps = compileTraps(loadedTraps);
     });
   }
 
-  // Initialize blocklist
+  // Inicializa blocklist
   const blocklistReady = blocklist.init();
 
-  logger.info("Honeypot middleware initialized", { trapsCount: allTraps.length });
+  logger.info("Middleware honeypot inicializado", { trapsCount: allTraps.length });
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    // Wait for traps and blocklist to be ready
+    // Aguarda armadilhas e blocklist estarem prontas
     await Promise.all([trapsLoaded, blocklistReady]);
+
+    const ip = normalizeIp(getIp(req));
+
+    // Verifica blocklist para TODAS as requisições - bloqueia IPs conhecidos imediatamente
+    if (ip && blocklist.isBlocked(ip)) {
+      logger.debug("IP bloqueado pela blocklist", { ip, path: req.path });
+      res.status(403);
+      return;
+    }
 
     const trap = findTrap(req.path, compiledTraps, logger);
 
@@ -170,38 +176,36 @@ export function createHoneypot(options: HoneypotOptions): HoneypotMiddleware {
       return;
     }
 
-    const ip = normalizeIp(getIp(req));
-
-    // Check if IP is unblockable (internal networks)
+    // Verifica se IP é indesbloqueável (redes internas)
     if (isUnblockableIp(ip)) {
-      logger.warn("Honeypot triggered by unblockable IP", { trap: trap.pattern, ip });
+      logger.warn("Armadilha disparada por IP indesbloqueável", { trap: trap.pattern, ip });
       await onTriggered(req, res, trap.pattern, ip);
       return;
     }
 
-    // Block the IP
+    // Bloqueia o IP
     try {
       await blocklist.block(ip, `Honeypot: ${trap.pattern}`);
-      logger.warn("IP blocked by honeypot", { trap: trap.pattern, ip });
+      logger.warn("IP bloqueado pelo honeypot", { trap: trap.pattern, ip });
     } catch (error) {
-      logger.error("Failed to block IP from honeypot", { trap: trap.pattern, ip, error: String(error) });
+      logger.error("Falha ao bloquear IP do honeypot", { trap: trap.pattern, ip, error: String(error) });
     }
 
-    // Call custom handler or default
+    // Chama handler customizado ou padrão
     await onTriggered(req, res, trap.pattern, ip);
   };
 }
 
 /**
- * Wait for traps to load (useful for testing)
+ * Aguarda carregamento das armadilhas (útil para testes)
  */
 export function waitForTraps(): Promise<void> {
-  // This will be overridden by the actual promise in createHoneypot
+  // Será sobrescrito pela promise real no createHoneypot
   return Promise.resolve();
 }
 
-// Re-export types and utilities
-export { DEFAULT_TRAPS } from "./types";
+// Re-exporta tipos e utilitários
+export { DEFAULT_TRAPS } from "./routes";
 export type { HoneypotOptions, HoneypotMiddleware, Trap, HoneypotLogger, BlocklistStorage, InternalNetworksConfig } from "./types";
 export { createMongoBlocklist, MongoBlocklist } from "./blocklist";
 export { createConsoleLogger, createNoopLogger, defaultLogger, debugLogger, productionLogger } from "./logger";

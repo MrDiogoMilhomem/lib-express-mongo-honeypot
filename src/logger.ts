@@ -1,5 +1,5 @@
 /**
- * Simple console logger implementation for honeypot
+ * Implementação simples de logger de console para honeypot
  */
 
 import type { HoneypotLogger } from "./types";
@@ -70,16 +70,19 @@ function createLogger(baseMeta: Record<string, unknown> = {}, options: { minLeve
 }
 
 /**
- * Create a console logger
- * @param baseMeta - Base metadata to include in all log entries
+ * Cria um logger de console
+ * @param baseMeta - Metadados base incluídos em todas as entradas de log
  * @param options - { minLevel: "debug" | "info" | "warn" | "error", color: boolean }
  */
-export function createConsoleLogger(baseMeta?: Record<string, unknown>, options?: { minLevel?: "debug" | "info" | "warn" | "error"; color?: boolean }): HoneypotLogger {
+export function createConsoleLogger(
+  baseMeta?: Record<string, unknown>,
+  options?: { minLevel?: "debug" | "info" | "warn" | "error"; color?: boolean }
+): HoneypotLogger {
   return createLogger(baseMeta, options);
 }
 
 /**
- * Create a disabled/noop logger (logging completely disabled)
+ * Cria um logger desabilitado/noop (logging completamente desabilitado)
  */
 export function createNoopLogger(): HoneypotLogger {
   const noop = (_message: string, _meta?: Record<string, unknown>) => {};
@@ -93,16 +96,16 @@ export function createNoopLogger(): HoneypotLogger {
 }
 
 /**
- * Default logger instance (info level, colored)
+ * Instância do logger padrão (nível info, colorido)
  */
 export const defaultLogger = createConsoleLogger();
 
 /**
- * Debug logger instance (debug level, colored)
+ * Instância do logger de debug (nível debug, colorido)
  */
 export const debugLogger = createConsoleLogger(undefined, { minLevel: "debug" });
 
 /**
- * Production logger instance (warn level, no colors)
+ * Instância do logger de produção (nível warn, sem cores)
  */
 export const productionLogger = createConsoleLogger(undefined, { minLevel: "warn", color: false });

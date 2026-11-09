@@ -1,11 +1,11 @@
 /**
- * IP utilities for honeypot
+ * Utilitários de IP para honeypot
  */
 
 import { BlockList, isIP } from "node:net";
 
 /**
- * Default internal networks that should never be blocked (RFC1918, localhost, link-local)
+ * Redes internas padrão que nunca devem ser bloqueadas (RFC1918, localhost, link-local)
  */
 export const DEFAULT_INTERNAL_NETWORKS = new BlockList();
 DEFAULT_INTERNAL_NETWORKS.addSubnet("127.0.0.0", 8, "ipv4");
@@ -20,9 +20,9 @@ DEFAULT_INTERNAL_NETWORKS.addSubnet("fe80::", 10, "ipv6");
 let internalNetworks: BlockList | false = DEFAULT_INTERNAL_NETWORKS;
 
 /**
- * Configure internal networks
- * @param networks - BlockList instance, false to disable, or undefined to reset to defaults
- * @returns The configured networks instance
+ * Configura redes internas
+ * @param networks - Instância BlockList, false para desabilitar, ou undefined para resetar aos padrões
+ * @returns Instância de redes configurada
  */
 export function setInternalNetworks(networks: BlockList | false | undefined): BlockList | false {
   internalNetworks = networks ?? DEFAULT_INTERNAL_NETWORKS;
@@ -30,21 +30,21 @@ export function setInternalNetworks(networks: BlockList | false | undefined): Bl
 }
 
 /**
- * Get current internal networks configuration
+ * Obtém configuração atual de redes internas
  */
 export function getInternalNetworks(): BlockList | false {
   return internalNetworks;
 }
 
 /**
- * Reset internal networks to defaults
+ * Reseta redes internas para os padrões
  */
 export function resetInternalNetworks(): void {
   internalNetworks = DEFAULT_INTERNAL_NETWORKS;
 }
 
 /**
- * Normalize IP address - removes IPv6 mapped IPv4 prefix (::ffff:)
+ * Normaliza endereço IP - remove prefixo IPv6 mapeado para IPv4 (::ffff:)
  */
 export function normalizeIp(ip: string | undefined): string {
   if (!ip) return "unknown";
@@ -52,11 +52,11 @@ export function normalizeIp(ip: string | undefined): string {
 }
 
 /**
- * Check if an IP is internal/unblockable
- * @returns true if IP is internal (localhost, private ranges, link-local, etc.) or if internal networks are disabled
+ * Verifica se um IP é interno/indesbloqueável
+ * @returns true se IP é interno (localhost, ranges privados, link-local, etc.) ou se redes internas estão desabilitadas
  */
 export function isUnblockableIp(ip: string): boolean {
-  // If internal networks check is disabled, no IP is unblockable
+  // Se verificação de redes internas está desabilitada, nenhum IP é indesbloqueável
   if (internalNetworks === false) return false;
   
   const family = isIP(ip);
@@ -65,8 +65,8 @@ export function isUnblockableIp(ip: string): boolean {
 }
 
 /**
- * Default IP extractor for Express requests
- * Works with trust proxy - configure app.set("trust proxy", true) in Express
+ * Extrator de IP padrão para requisições Express
+ * Funciona com trust proxy - configure app.set("trust proxy", true) no Express
  */
 export function getClientIp(req: { ip?: string }): string | undefined {
   return req.ip;

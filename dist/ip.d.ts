@@ -1,37 +1,37 @@
 /**
- * IP utilities for honeypot
+ * Utilitários de IP para honeypot
  */
 import { BlockList } from "node:net";
 /**
- * Default internal networks that should never be blocked (RFC1918, localhost, link-local)
+ * Redes internas padrão que nunca devem ser bloqueadas (RFC1918, localhost, link-local)
  */
 export declare const DEFAULT_INTERNAL_NETWORKS: BlockList;
 /**
- * Configure internal networks
- * @param networks - BlockList instance, false to disable, or undefined to reset to defaults
- * @returns The configured networks instance
+ * Configura redes internas
+ * @param networks - Instância BlockList, false para desabilitar, ou undefined para resetar aos padrões
+ * @returns Instância de redes configurada
  */
 export declare function setInternalNetworks(networks: BlockList | false | undefined): BlockList | false;
 /**
- * Get current internal networks configuration
+ * Obtém configuração atual de redes internas
  */
 export declare function getInternalNetworks(): BlockList | false;
 /**
- * Reset internal networks to defaults
+ * Reseta redes internas para os padrões
  */
 export declare function resetInternalNetworks(): void;
 /**
- * Normalize IP address - removes IPv6 mapped IPv4 prefix (::ffff:)
+ * Normaliza endereço IP - remove prefixo IPv6 mapeado para IPv4 (::ffff:)
  */
 export declare function normalizeIp(ip: string | undefined): string;
 /**
- * Check if an IP is internal/unblockable
- * @returns true if IP is internal (localhost, private ranges, link-local, etc.) or if internal networks are disabled
+ * Verifica se um IP é interno/indesbloqueável
+ * @returns true se IP é interno (localhost, ranges privados, link-local, etc.) ou se redes internas estão desabilitadas
  */
 export declare function isUnblockableIp(ip: string): boolean;
 /**
- * Default IP extractor for Express requests
- * Works with trust proxy - configure app.set("trust proxy", true) in Express
+ * Extrator de IP padrão para requisições Express
+ * Funciona com trust proxy - configure app.set("trust proxy", true) no Express
  */
 export declare function getClientIp(req: {
     ip?: string;

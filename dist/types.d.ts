@@ -1,10 +1,10 @@
 /**
- * Core types for express-mongo-honeypot
+ * Tipos principais do express-mongo-honeypot
  */
 import type { Request, Response, NextFunction } from "express";
 import { BlockList } from "node:net";
 /**
- * Logger interface - implement your own or use the built-in console logger
+ * Interface do logger - implemente a sua ou use o logger de console integrado
  */
 export interface HoneypotLogger {
     debug(message: string, meta?: Record<string, unknown>): void;
@@ -14,52 +14,52 @@ export interface HoneypotLogger {
     child(meta: Record<string, unknown>): HoneypotLogger;
 }
 /**
- * Blocklist storage interface - implement for your storage backend
+ * Interface de armazenamento da blocklist - implemente para seu backend de armazenamento
  */
 export interface BlocklistStorage {
-    /** Initialize the storage (create indexes, connect, etc.) */
+    /** Inicializa o armazenamento (cria índices, conecta, etc.) */
     init(): Promise<void>;
-    /** Check if an IP is blocked */
+    /** Verifica se um IP está bloqueado */
     isBlocked(ip: string): boolean;
-    /** Block an IP with a reason */
+    /** Bloqueia um IP com motivo */
     block(ip: string, reason: string): Promise<void>;
-    /** Optional: unblock an IP */
+    /** Opcional: desbloqueia um IP */
     unblock?(ip: string): Promise<void>;
-    /** Optional: get all blocked IPs */
+    /** Opcional: obtém todos os IPs bloqueados */
     getAll?(): Promise<string[]>;
-    /** Optional: close connections */
+    /** Opcional: fecha conexões */
     close?(): Promise<void>;
 }
 /**
- * Internal networks configuration
- * - undefined: use library defaults (RFC1918, localhost, link-local)
- * - BlockList: use custom BlockList instance
- * - false: disable internal network checks (block all IPs)
+ * Configuração de redes internas
+ * - undefined: usa padrões da biblioteca (RFC1918, localhost, link-local)
+ * - BlockList: usa instância BlockList customizada
+ * - false: desabilita verificação de redes internas (bloqueia todos IPs)
  */
 export type InternalNetworksConfig = BlockList | false | undefined;
 /**
- * Configuration options for the honeypot
+ * Opções de configuração do honeypot
  */
 export interface HoneypotOptions {
-    /** Paths to trap - exact matches or glob patterns (e.g., "/admin", "/api/*") */
+    /** Caminhos para armadilha - correspondência exata ou padrões glob (ex: "/admin", "/api/*") */
     traps?: string[];
-    /** Path to JSON file with custom traps (merged with defaults) */
+    /** Caminho para arquivo JSON com armadilhas customizadas (mesclado com padrões) */
     trapsFile?: string;
-    /** Blocklist storage implementation */
+    /** Implementação de armazenamento da blocklist */
     blocklist: BlocklistStorage;
-    /** Logger implementation - set to false to disable logging, or provide custom logger */
+    /** Implementação do logger - defina como false para desabilitar, ou forneça logger customizado */
     logger?: HoneypotLogger | false;
-    /** Function to extract client IP from request */
+    /** Função para extrair IP do cliente da requisição */
     getIp?: (req: Request) => string | undefined;
-    /** Internal networks that should never be blocked - provide custom BlockList, false to disable, or omit for defaults */
+    /** Redes internas que nunca devem ser bloqueadas - forneça BlockList customizado, false para desabilitar, ou omita para padrões */
     internalNetworks?: InternalNetworksConfig;
-    /** Custom handler when trap is triggered (default: 404 + block) */
+    /** Handler customizado quando armadilha é disparada (padrão: 404 + bloqueio) */
     onTriggered?: (req: Request, res: Response, trap: string, ip: string) => Promise<void> | void;
-    /** Whether to load traps from file on startup */
+    /** Se deve carregar armadilhas do arquivo na inicialização */
     autoLoadTraps?: boolean;
 }
 /**
- * Internal trap representation
+ * Representação interna de uma armadilha
  */
 export interface Trap {
     pattern: string;
@@ -67,12 +67,7 @@ export interface Trap {
     isGlob: boolean;
 }
 /**
- * Default traps that are always included
- * @deprecated Use DEFAULT_TRAPS from "express-mongo-honeypot/routes" instead
- */
-export declare const DEFAULT_TRAPS: string[];
-/**
- * Express middleware type
+ * Tipo do middleware Express
  */
 export type HoneypotMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 //# sourceMappingURL=types.d.ts.map

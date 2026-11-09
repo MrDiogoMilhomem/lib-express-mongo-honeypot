@@ -1,6 +1,6 @@
 "use strict";
 /**
- * MongoDB blocklist storage implementation
+ * Implementação de armazenamento da blocklist usando MongoDB
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoBlocklist = void 0;
@@ -9,7 +9,7 @@ const mongodb_1 = require("mongodb");
 const logger_1 = require("./logger");
 const DEFAULT_UPDATE_INTERVAL_MS = 30_000;
 /**
- * MongoDB-based blocklist storage
+ * Armazenamento de blocklist baseado em MongoDB
  */
 class MongoBlocklist {
     options;
@@ -44,12 +44,12 @@ class MongoBlocklist {
             await this.collection.createIndex({ ip: 1 }, { unique: true });
         }
         catch {
-            // Index may already exist
+            // Índice pode já existir
         }
         await this.loadBlocklist();
         this.updateInterval = setInterval(() => {
             this.loadBlocklist().catch((err) => {
-                this.logger.error("Failed to update blocked IPs", { error: String(err) });
+                this.logger.error("Falha ao atualizar IPs bloqueados", { error: String(err) });
             });
         }, this.updateIntervalMs);
         this.updateInterval.unref();
@@ -57,7 +57,7 @@ class MongoBlocklist {
     async loadBlocklist() {
         const docs = await this.collection.find({}, { projection: { ip: 1 } }).toArray();
         this.blockedIps = new Set(docs.map((doc) => doc.ip));
-        this.logger.debug("Blocklist loaded", { count: this.blockedIps.size });
+        this.logger.debug("Blocklist carregada", { count: this.blockedIps.size });
     }
     isBlocked(ip) {
         return this.blockedIps.has(ip);
@@ -65,12 +65,12 @@ class MongoBlocklist {
     async block(ip, reason) {
         this.blockedIps.add(ip);
         await this.collection.updateOne({ ip }, { $setOnInsert: { reason, blockedAt: new Date() } }, { upsert: true });
-        this.logger.info("IP blocked", { ip, reason });
+        this.logger.info("IP bloqueado", { ip, reason });
     }
     async unblock(ip) {
         this.blockedIps.delete(ip);
         await this.collection.deleteOne({ ip });
-        this.logger.info("IP unblocked", { ip });
+        this.logger.info("IP desbloqueado", { ip });
     }
     async getAll() {
         return Array.from(this.blockedIps);
@@ -82,12 +82,12 @@ class MongoBlocklist {
         if (this.ownClient) {
             await this.client.close();
         }
-        this.logger.debug("Blocklist closed");
+        this.logger.debug("Blocklist fechada");
     }
 }
 exports.MongoBlocklist = MongoBlocklist;
 /**
- * Create a MongoDB blocklist instance
+ * Cria uma instância de blocklist MongoDB
  */
 function createMongoBlocklist(options) {
     return new MongoBlocklist(options);

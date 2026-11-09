@@ -1,54 +1,54 @@
 /**
- * Common blocked/trap routes that can be used as honeypot traps.
- * These are paths that legitimate users typically never access,
- * making them ideal for detecting scanners and bots.
+ * Rotas comuns de armadilhas/bloqueio para uso como honeypot.
+ * São caminhos que usuários legítimos tipicamente nunca acessam,
+ * tornando-os ideais para detectar scanners e bots.
  */
 /**
- * Default trap paths included automatically
+ * Armadilhas padrão incluídas automaticamente
  * @example
  * import { createHoneypot, DEFAULT_TRAPS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: DEFAULT_TRAPS });
  */
 export declare const DEFAULT_TRAPS: string[];
 /**
- * Extended trap paths for more aggressive protection
- * Includes common admin panels, debug endpoints, and sensitive files
+ * Armadilhas estendidas para proteção mais agressiva
+ * Inclui painéis admin comuns, endpoints de debug e arquivos sensíveis
  * @example
  * import { createHoneypot, EXTENDED_TRAPS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: EXTENDED_TRAPS });
  */
 export declare const EXTENDED_TRAPS: string[];
 /**
- * Minimal trap paths - only the most commonly scanned paths
- * Use this for lighter protection with fewer false positives
+ * Armadilhas mínimas - apenas os caminhos mais escaneados
+ * Use para proteção mais leve com menos falsos positivos
  * @example
  * import { createHoneypot, MINIMAL_TRAPS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: MINIMAL_TRAPS });
  */
 export declare const MINIMAL_TRAPS: string[];
 /**
- * WordPress-specific traps
+ * Armadilhas específicas para WordPress
  * @example
  * import { createHoneypot, WORDPRESS_TRAPS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: WORDPRESS_TRAPS });
  */
 export declare const WORDPRESS_TRAPS: string[];
 /**
- * PHP-specific traps
+ * Armadilhas específicas para PHP
  * @example
  * import { createHoneypot, PHP_TRAPS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: PHP_TRAPS });
  */
 export declare const PHP_TRAPS: string[];
 /**
- * Node.js/Express-specific traps
+ * Armadilhas específicas para Node.js/Express
  * @example
  * import { createHoneypot, NODE_TRAPS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: NODE_TRAPS });
  */
 export declare const NODE_TRAPS: string[];
 /**
- * All predefined trap sets for easy access
+ * Todos os conjuntos de armadilhas predefinidos para acesso fácil
  * @example
  * import { createHoneypot, TRAP_SETS } from "express-mongo-honeypot";
  * const honeypot = createHoneypot({ blocklist, traps: TRAP_SETS.extended });

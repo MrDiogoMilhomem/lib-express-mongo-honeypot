@@ -1,10 +1,10 @@
 /**
- * Simple console logger implementation for honeypot
+ * Implementação simples de logger de console para honeypot
  */
 import type { HoneypotLogger } from "./types";
 /**
- * Create a console logger
- * @param baseMeta - Base metadata to include in all log entries
+ * Cria um logger de console
+ * @param baseMeta - Metadados base incluídos em todas as entradas de log
  * @param options - { minLevel: "debug" | "info" | "warn" | "error", color: boolean }
  */
 export declare function createConsoleLogger(baseMeta?: Record<string, unknown>, options?: {
@@ -12,19 +12,19 @@ export declare function createConsoleLogger(baseMeta?: Record<string, unknown>, 
     color?: boolean;
 }): HoneypotLogger;
 /**
- * Create a disabled/noop logger (logging completely disabled)
+ * Cria um logger desabilitado/noop (logging completamente desabilitado)
  */
 export declare function createNoopLogger(): HoneypotLogger;
 /**
- * Default logger instance (info level, colored)
+ * Instância do logger padrão (nível info, colorido)
  */
 export declare const defaultLogger: HoneypotLogger;
 /**
- * Debug logger instance (debug level, colored)
+ * Instância do logger de debug (nível debug, colorido)
  */
 export declare const debugLogger: HoneypotLogger;
 /**
- * Production logger instance (warn level, no colors)
+ * Instância do logger de produção (nível warn, sem cores)
  */
 export declare const productionLogger: HoneypotLogger;
 //# sourceMappingURL=logger.d.ts.map

@@ -1,5 +1,5 @@
 /**
- * MongoDB blocklist storage implementation
+ * Implementação de armazenamento da blocklist usando MongoDB
  */
 
 import type { BlocklistStorage, HoneypotLogger } from "./types";
@@ -15,24 +15,24 @@ interface BlockedIpDoc {
 const DEFAULT_UPDATE_INTERVAL_MS = 30_000;
 
 export interface MongoBlocklistOptions {
-  /** MongoDB connection string */
+  /** String de conexão MongoDB */
   url: string;
-  /** Database name */
+  /** Nome do banco de dados */
   database: string;
-  /** Collection name (default: "BlockedIPs") */
+  /** Nome da coleção (padrão: "BlockedIPs") */
   collectionName?: string;
-  /** Refresh interval in ms (default: 30000) */
+  /** Intervalo de atualização em ms (padrão: 30000) */
   updateIntervalMs?: number;
-  /** Existing MongoDB client (optional) */
+  /** Cliente MongoDB existente (opcional) */
   client?: MongoClient;
-  /** Existing Db instance (optional) */
+  /** Instância Db existente (opcional) */
   db?: Db;
-  /** Logger instance (optional) */
+  /** Instância do logger (opcional) */
   logger?: HoneypotLogger | false;
 }
 
 /**
- * MongoDB-based blocklist storage
+ * Armazenamento de blocklist baseado em MongoDB
  */
 export class MongoBlocklist implements BlocklistStorage {
   private client: MongoClient;
@@ -68,14 +68,14 @@ export class MongoBlocklist implements BlocklistStorage {
     try {
       await this.collection.createIndex({ ip: 1 }, { unique: true });
     } catch {
-      // Index may already exist
+      // Índice pode já existir
     }
 
     await this.loadBlocklist();
 
     this.updateInterval = setInterval(() => {
       this.loadBlocklist().catch((err) => {
-        this.logger.error("Failed to update blocked IPs", { error: String(err) });
+        this.logger.error("Falha ao atualizar IPs bloqueados", { error: String(err) });
       });
     }, this.updateIntervalMs);
     this.updateInterval.unref();
@@ -84,7 +84,7 @@ export class MongoBlocklist implements BlocklistStorage {
   private async loadBlocklist(): Promise<void> {
     const docs = await this.collection.find({}, { projection: { ip: 1 } }).toArray();
     this.blockedIps = new Set(docs.map((doc) => doc.ip));
-    this.logger.debug("Blocklist loaded", { count: this.blockedIps.size });
+    this.logger.debug("Blocklist carregada", { count: this.blockedIps.size });
   }
 
   isBlocked(ip: string): boolean {
@@ -98,13 +98,13 @@ export class MongoBlocklist implements BlocklistStorage {
       { $setOnInsert: { reason, blockedAt: new Date() } },
       { upsert: true }
     );
-    this.logger.info("IP blocked", { ip, reason });
+    this.logger.info("IP bloqueado", { ip, reason });
   }
 
   async unblock(ip: string): Promise<void> {
     this.blockedIps.delete(ip);
     await this.collection.deleteOne({ ip });
-    this.logger.info("IP unblocked", { ip });
+    this.logger.info("IP desbloqueado", { ip });
   }
 
   async getAll(): Promise<string[]> {
@@ -118,12 +118,12 @@ export class MongoBlocklist implements BlocklistStorage {
     if (this.ownClient) {
       await this.client.close();
     }
-    this.logger.debug("Blocklist closed");
+    this.logger.debug("Blocklist fechada");
   }
 }
 
 /**
- * Create a MongoDB blocklist instance
+ * Cria uma instância de blocklist MongoDB
  */
 export function createMongoBlocklist(options: MongoBlocklistOptions): MongoBlocklist {
   return new MongoBlocklist(options);

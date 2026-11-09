@@ -1,26 +1,26 @@
 /**
- * MongoDB blocklist storage implementation
+ * Implementação de armazenamento da blocklist usando MongoDB
  */
 import type { BlocklistStorage, HoneypotLogger } from "./types";
 import { Db, MongoClient } from "mongodb";
 export interface MongoBlocklistOptions {
-    /** MongoDB connection string */
+    /** String de conexão MongoDB */
     url: string;
-    /** Database name */
+    /** Nome do banco de dados */
     database: string;
-    /** Collection name (default: "BlockedIPs") */
+    /** Nome da coleção (padrão: "BlockedIPs") */
     collectionName?: string;
-    /** Refresh interval in ms (default: 30000) */
+    /** Intervalo de atualização em ms (padrão: 30000) */
     updateIntervalMs?: number;
-    /** Existing MongoDB client (optional) */
+    /** Cliente MongoDB existente (opcional) */
     client?: MongoClient;
-    /** Existing Db instance (optional) */
+    /** Instância Db existente (opcional) */
     db?: Db;
-    /** Logger instance (optional) */
+    /** Instância do logger (opcional) */
     logger?: HoneypotLogger | false;
 }
 /**
- * MongoDB-based blocklist storage
+ * Armazenamento de blocklist baseado em MongoDB
  */
 export declare class MongoBlocklist implements BlocklistStorage {
     private readonly options;
@@ -42,7 +42,7 @@ export declare class MongoBlocklist implements BlocklistStorage {
     close(): Promise<void>;
 }
 /**
- * Create a MongoDB blocklist instance
+ * Cria uma instância de blocklist MongoDB
  */
 export declare function createMongoBlocklist(options: MongoBlocklistOptions): MongoBlocklist;
 //# sourceMappingURL=blocklist.d.ts.map

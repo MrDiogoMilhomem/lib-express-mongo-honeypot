@@ -1,6 +1,6 @@
 "use strict";
 /**
- * Simple console logger implementation for honeypot
+ * Implementação simples de logger de console para honeypot
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productionLogger = exports.debugLogger = exports.defaultLogger = void 0;
@@ -61,15 +61,15 @@ function createLogger(baseMeta = {}, options = {}) {
     };
 }
 /**
- * Create a console logger
- * @param baseMeta - Base metadata to include in all log entries
+ * Cria um logger de console
+ * @param baseMeta - Metadados base incluídos em todas as entradas de log
  * @param options - { minLevel: "debug" | "info" | "warn" | "error", color: boolean }
  */
 function createConsoleLogger(baseMeta, options) {
     return createLogger(baseMeta, options);
 }
 /**
- * Create a disabled/noop logger (logging completely disabled)
+ * Cria um logger desabilitado/noop (logging completamente desabilitado)
  */
 function createNoopLogger() {
     const noop = (_message, _meta) => { };
@@ -82,14 +82,14 @@ function createNoopLogger() {
     };
 }
 /**
- * Default logger instance (info level, colored)
+ * Instância do logger padrão (nível info, colorido)
  */
 exports.defaultLogger = createConsoleLogger();
 /**
- * Debug logger instance (debug level, colored)
+ * Instância do logger de debug (nível debug, colorido)
  */
 exports.debugLogger = createConsoleLogger(undefined, { minLevel: "debug" });
 /**
- * Production logger instance (warn level, no colors)
+ * Instância do logger de produção (nível warn, sem cores)
  */
 exports.productionLogger = createConsoleLogger(undefined, { minLevel: "warn", color: false });

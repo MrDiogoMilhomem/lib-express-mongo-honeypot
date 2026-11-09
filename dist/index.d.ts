@@ -1,16 +1,16 @@
 /**
- * Honeypot middleware - main export
+ * Middleware Honeypot - exportação principal
  */
 import type { HoneypotOptions, HoneypotMiddleware } from "./types";
 /**
- * Create honeypot middleware
+ * Cria middleware honeypot
  */
 export declare function createHoneypot(options: HoneypotOptions): HoneypotMiddleware;
 /**
- * Wait for traps to load (useful for testing)
+ * Aguarda carregamento das armadilhas (útil para testes)
  */
 export declare function waitForTraps(): Promise<void>;
-export { DEFAULT_TRAPS } from "./types";
+export { DEFAULT_TRAPS } from "./routes";
 export type { HoneypotOptions, HoneypotMiddleware, Trap, HoneypotLogger, BlocklistStorage, InternalNetworksConfig } from "./types";
 export { createMongoBlocklist, MongoBlocklist } from "./blocklist";
 export { createConsoleLogger, createNoopLogger, defaultLogger, debugLogger, productionLogger } from "./logger";
