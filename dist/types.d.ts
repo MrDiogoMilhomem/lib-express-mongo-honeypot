@@ -1,7 +1,7 @@
 /**
  * Tipos principais do express-mongo-honeypot
  */
-import type { Request, Response, NextFunction } from "express";
+import type { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
 import { BlockList } from "node:net";
 /**
  * Interface do logger - implemente a sua ou use o logger de console integrado
@@ -39,6 +39,10 @@ export interface BlocklistStorage {
 export type InternalNetworksConfig = BlockList | false | undefined;
 /**
  * Opções de configuração do honeypot
+ *
+ * Os callbacks getIp/onTriggered são tipados com os tipos do Express resolvidos
+ * pela biblioteca. O middleware retornado por createHoneypot é uma função genérica,
+ * portanto aceito pelo app.use() tanto no Express 4 quanto no Express 5.
  */
 export interface HoneypotOptions {
     /** Caminhos para armadilha - correspondência exata ou padrões glob (ex: "/admin", "/api/*") */
@@ -50,11 +54,11 @@ export interface HoneypotOptions {
     /** Implementação do logger - defina como false para desabilitar, ou forneça logger customizado */
     logger?: HoneypotLogger | false;
     /** Função para extrair IP do cliente da requisição */
-    getIp?: (req: Request) => string | undefined;
+    getIp?: (req: ExpressRequest) => string | undefined;
     /** Redes internas que nunca devem ser bloqueadas - forneça BlockList customizado, false para desabilitar, ou omita para padrões */
     internalNetworks?: InternalNetworksConfig;
     /** Handler customizado quando armadilha é disparada (padrão: 404 + bloqueio) */
-    onTriggered?: (req: Request, res: Response, trap: string, ip: string) => Promise<void> | void;
+    onTriggered?: (req: ExpressRequest, res: ExpressResponse, trap: string, ip: string) => Promise<void> | void;
     /** Se deve carregar armadilhas do arquivo na inicialização */
     autoLoadTraps?: boolean;
 }
@@ -68,6 +72,11 @@ export interface Trap {
 }
 /**
  * Tipo do middleware Express
+ *
+ * Declarado como função genérica (sem restrição nos parâmetros Req/Res) para ser
+ * estruturalmente compatível com o RequestHandler do Express 4 E do Express 5 —
+ * o TypeScript infere os tipos concretos no ponto de uso (ex.: app.use(honeypot)),
+ * independente de qual versão dos tipos do Express a biblioteca resolve.
  */
-export type HoneypotMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export type HoneypotMiddleware = <Req = ExpressRequest, Res = ExpressResponse>(req: Req, res: Res, next: NextFunction) => Promise<void> | void;
 //# sourceMappingURL=types.d.ts.map

@@ -2,6 +2,8 @@
 
 Middleware Express que configura armadilhas honeypot para detectar e bloquear automaticamente scanners, bots e atores maliciosos. Usa MongoDB para armazenamento persistente da blocklist.
 
+**Autor:** [Diogo Milhomem](https://github.com/MrDiogoMilhomem)
+
 ## Recursos
 
 - Honeypot traps - Caminhos configuraveis que usuarios legitimos nunca acessam
@@ -19,7 +21,7 @@ Middleware Express que configura armadilhas honeypot para detectar e bloquear au
 npm install express-mongo-honeypot mongodb
 ```
 
-Dependencias peer: `express` e `mongodb` (v6+)
+Dependencias peer: `express` (v4 ou v5) e `mongodb` (v6+)
 
 ## Inicio Rapido
 
@@ -310,6 +312,26 @@ process.on("SIGTERM", async () => {
 });
 ```
 
+## Estrutura do Projeto
+
+```text
+src/
+├── index.ts      # Exportacao publica (barrel) - re-exporta a API da biblioteca
+├── honeypot.ts   # Implementacao do middleware (createHoneypot, waitForTraps e logica de armadilhas)
+├── types.ts      # Tipos publicos (HoneypotOptions, HoneypotMiddleware, BlocklistStorage, ...)
+├── routes.ts     # Conjuntos de armadilhas predefinidos (DEFAULT_TRAPS, MINIMAL_TRAPS, ...)
+├── blocklist.ts  # Armazenamento da blocklist em MongoDB (MongoBlocklist)
+├── logger.ts     # Loggers embutidos (console, noop, debug, producao)
+└── ip.ts         # Utilitarios de IP e redes internas (normalizeIp, getClientIp, ...)
+```
+
+Todos os modulos sao re-exportados por `src/index.ts`, entao o uso publico
+continua o mesmo:
+
+```typescript
+import { createHoneypot, createMongoBlocklist } from "express-mongo-honeypot";
+```
+
 ## Como Funciona
 
 1. **Requisicao chega** -> Middleware verifica caminho contra padroes de armadilha
@@ -330,5 +352,12 @@ Por padrao, estes ranges nunca sao bloqueados:
 - `fc00::/7` (IPv6 privado)
 - `fe80::/10` (IPv6 link-local)
 
+## Creditos
+
+- [Express](https://expressjs.com/) - Framework web utilizado pelo middleware
+- [MongoDB](https://www.mongodb.com/) - Armazenamento da blocklist
+- [TypeScript](https://www.typescriptlang.org/) - Tipagem e desenvolvimento
+- [vitest](https://vitest.dev/) - Testes
+
 ## Licenca
-Este projeto é open-source e distribuído sob os termos da [GPL-2.0](LICENSE).
+Este projeto é open-source e distribuído sob os termos da [GPLv3](LICENSE).
